@@ -1,0 +1,41 @@
+---
+title: "Untitled"
+author: "Julia Thacker"
+date: "10/17/2021"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(lpSolveAPI)
+TransportationModel.lp<-make.lp(0,8)
+set.objfn(TransportationModel.lp,c(622,614,630,0,641,645,649,0))
+```
+Created a model with 0 constraints and 8 decision variables. There is one decision variable for the amount produced at each plant and distributed to each warehouse. Also added two decision variables to represent a dummy location for the excess production capacity of 10 units.
+The objective function reflects the total production and shipping costs per warehouse and plant combination.
+```{r}
+lp.control(TransportationModel.lp,sense='min')
+```
+Set to minimum
+```{r}
+add.constraint(TransportationModel.lp, c(1,1,1,1,0,0,0,0),"=",100)
+add.constraint(TransportationModel.lp, c(0,0,0,0,1,1,1,1),"=",120)
+add.constraint(TransportationModel.lp, c(1,0,0,0,1,0,0,0),"=",80)
+add.constraint(TransportationModel.lp, c(0,1,0,0,0,1,0,0),"=",60)
+add.constraint(TransportationModel.lp, c(0,0,1,0,0,0,1,0),"=",70)
+add.constraint(TransportationModel.lp, c(0,0,0,1,0,0,0,1),"=",10)
+```
+Added constraints for the production capacity of each plant and the monthly demand for each warehouse.
+```{r}
+solve(TransportationModel.lp)
+get.objective(TransportationModel.lp)
+get.variables(TransportationModel.lp)
+```
+Solved the model. The fourth and eighth values in the solution refer to the dummy location. This solution tells us that the optimal solution would be 60 units distributed to Warehouse 2 from Plant A, 40 units distributed to Warehouse 3 from Plant A, 30 units distributed to Warehouse 3 from Plant B, and 80 units distributed to Warehouse 1 from Plant B. This will reach the monthly demand for each warehouse without going over the production capacity of either plant. There will be 10 remaining units available at Plant B which are shown in the result of the dummy location.
