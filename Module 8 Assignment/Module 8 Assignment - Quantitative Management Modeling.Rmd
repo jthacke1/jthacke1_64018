@@ -1,0 +1,84 @@
+---
+title: "Module 8 Assignment - Quantitative Management Modeling"
+author: "Julia Thacker"
+date: "10/30/2021"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(lpSolveAPI)
+library(Benchmarking)
+```
+
+```{r}
+x<-matrix(c(150,400,320,520,350,320,0.2,0.7,1.2,2,1.2,0.7),ncol = 2)
+colnames(x)<-c("StaffHours","Supplies")
+```
+
+```{r}
+y<-matrix(c(14000,14000,42000,28000,19000,14000,3500,21000,10500,42000,25000,15000),ncol = 2)
+colnames(y)<-c("ReimbursedPatientDays","PrivatelyPaidPatientDays")
+```
+Created matrix x for the two inputs and martix y for the two outputs. Then performed DEA analysis under the assumptions of CRS, FDH, VRS, IRS, DRS and FRH. Also determined the Peers and Lambdas for each.
+```{r}
+e<-dea(x,y,RTS="CRS")
+e
+peers(e)
+lambda(e)
+dea.plot(x,y,RTS="CRS",ORIENTATION = "in-out",txt=LETTERS[1:6])
+```
+
+The CRS plot shows only facility 3 as efficient and the other 5 facilities are inefficient. This is the only formulation that resulted in only one facility being efficient. The CRS method would likely not be chosen by a firm because it produces results with the lowest performance.
+```{r}
+v<-dea(x,y,RTS="VRS")
+v
+peers(v)
+lambda(v)
+dea.plot(x,y,RTS="VRS",ORIENTATION = "in-out",txt=LETTERS[1:6])
+```
+
+The VRS plot shows that facilities 1, 3, and 4 are efficient and 2, 5, and 6 are not.
+```{r}
+i<-dea(x,y,RTS="IRS")
+i
+peers(i)
+lambda(i)
+dea.plot(x,y,RTS="IRS",ORIENTATION = "in-out",txt=LETTERS[1:6])
+```
+The IRS plot shows that only facilities 1 and 3 are efficient.
+```{r}
+d<-dea(x,y,RTS="DRS")
+d
+peers(d)
+lambda(d)
+dea.plot(x,y,RTS="DRS",ORIENTATION = "in-out",txt=LETTERS[1:6])
+```
+The DRS plot shows that facilities 3, and 4 are efficient and 1, 2, 5, and 6 are not efficient.
+```{r}
+f<-dea(x,y,RTS="FDH")
+f
+peers(f)
+lambda(f)
+dea.plot(x,y,RTS="FDH",ORIENTATION = "in-out",txt=LETTERS[1:6])
+```
+The FDH plot shows that facilities 1, 3, 4, and 6 are efficient while facilities 2 and 5 are not. This formulation resulted in the highest number of efficient facilities.
+
+```{r}
+g<-dea(x,y,RTS="add")
+g
+peers(g)
+lambda(g)
+dea.plot(x,y,RTS="add",ORIENTATION = "in-out",txt=LETTERS[1:6])
+```
+The add/FRH plot is similar to the FDH output, except now facility 6 is also shown as not efficient, along with facilities 2 and 5.
+
+
+Facility 3 is the only facility that was shown as efficient under each of the assumptions. This means that facility 3 is the most efficient among the six facilities. Facilities 2 and 5 were not efficient under any of the assumptions.
+
