@@ -1,0 +1,42 @@
+---
+title: "Module 9 Assignment - Quantitative Management Modeling"
+author: "Julia Thacker"
+date: "11/4/2021"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(lpSolveAPI)
+goalprogramming.lp<-make.lp(0,7)
+set.objfn(goalprogramming.lp,c(20,15,25,-6,-6,0,-3))
+```
+Created an LP Model that maximizes the total profit based on the Unit Contribution of each of the three new products.The model will also apply a weight of -6 for any change, increase or decrease, in the current level of employment. It also applies a weight of -3 for any decrease in next year's earnings from the current year's level.
+```{r}
+lp.control(goalprogramming.lp,sense='max')
+```
+
+```{r}
+add.constraint(goalprogramming.lp, c(6,4,5,-1,1,0,0),"=",50)
+add.constraint(goalprogramming.lp, c(8,7,5,0,0,-1,1),"=",75)
+colnames(goalprogramming.lp)<-c("x1","x2","x3","y1+","y1-","y2+","y2-")
+```
+Four of the variables are auxiliary variables to demonstrate any increase or decrease in the current level of employment or in next year's earnings compared to this year's earnings. The variables are named y1+ and y1- to represent any change in employment and y2+ and y2- represent any change in earnings. The variables that represent an increase are shown as a negative, and the variables that represent a decrease are shown as a positive. This model will find the optimal solution of maximum profit while also considering the penalty weights for not achieving the other two goals.
+```{r}
+solve(goalprogramming.lp)
+```
+An optimal solution was found.
+```{r}
+get.objective(goalprogramming.lp)
+```
+
+```{r}
+get.variables(goalprogramming.lp)
+```
+This answer shows that producing product 3 would result in the maximum profit for the company. The fourth variable represents an increase in the amount of employees. This result shows that the optimal solution would include an increase in the number of employees, despite the penalty. Even with the -6 penalty weight, this solution would still be the option that creates the highest profit.
