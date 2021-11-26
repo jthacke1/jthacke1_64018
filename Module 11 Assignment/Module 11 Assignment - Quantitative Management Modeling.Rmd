@@ -1,0 +1,57 @@
+---
+title: "Module 11 Assignment - Quantitative Management Modeling"
+author: "Julia Thacker"
+date: "11/19/2021"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(lpSolveAPI)
+library(lpSolve)
+ap.lp<-make.lp(0,7)
+set.objfn(ap.lp,c(775,800,800,800,800,775,750))
+lp.control(ap.lp,sense='min')
+```
+Created an LP model with 7 decision variables that will minimize the total wage expenses.
+```{r}
+set.type(ap.lp,c(1,2,3,4,5,6,7),"integer")
+```
+Set the type of the decision variables to integer.
+```{r}
+add.constraint(ap.lp, c(1,1,1,1,1,0,0),">=",19)
+add.constraint(ap.lp, c(0,1,1,1,1,1,0),">=",18)
+add.constraint(ap.lp, c(0,0,1,1,1,1,1),">=",27)
+add.constraint(ap.lp, c(1,0,0,1,1,1,1),">=",22)
+add.constraint(ap.lp, c(1,1,0,0,1,1,1),">=",26)
+add.constraint(ap.lp, c(1,1,1,0,0,1,1),">=",25)
+add.constraint(ap.lp, c(1,1,1,1,0,0,1),">=",21)
+```
+Added 7 constraints to account for the minimum number of workers required on each day of the week.
+```{r}
+print(ap.lp)
+```
+
+```{r}
+solve(ap.lp)
+get.objective(ap.lp)
+```
+Solved the model. The total cost of the optimal solution is $25,675.
+```{r}
+get.variables(ap.lp)
+```
+The optimal solution suggests 5 workers for shift 1, 1 for shift 2, 5 for shift 3, 0 for shift 4, 8 for shift 5, 4 for shift 6, and 10 for shift 7.
+
+This result means that there would be 18 workers on Sunday, 27 on Monday, 27 on Tuesday, 28 on Wednesday, 25 on Thursday, 21 on Friday, and 19 on Saturday.
+
+
+
+
+
+
+
